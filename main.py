@@ -5,22 +5,12 @@ from api_clustering import get_cluster, euclidian_dist, best_day_cluster
 from sklearn.cluster import AffinityPropagation
 from time import time
 from sys import argv
+import json
 
-DEBUG = True
+DEBUG = False
 
-def read_data():
-    if DEBUG:
-        present = 1460639800
-        command = "is_last_coffee"
-        csv = CSV("data.csv")
-        data_matrix = csv.read_data_rows()
-    else:
-        present = int(time())
-        command = argv[1]
-        data_matrix = [row.split(',') for row in argv[2].split(';')]
-    return present, command, data_matrix
 
-def objectise_data(data_matrix):
+def objectise_matrix(data_matrix):
     L = len(data_matrix)
     data_obj = []
     for i in range(L):
@@ -38,10 +28,46 @@ def objectise_data(data_matrix):
         data_obj.append(obj)
     return data_obj
 
+def objectise_json(data_json):
+    L = len(data_json)
+    data_obj = []
+    for i in range(L):
+        obj = dict();
+        obj["sleep_quality"] = int(data_json[i].wakeup.quality)
+        obj["wake_up"] = int(data_json[i].wakeup.time)
+        obj["coffees"] = [int(x.time) for x in data_json.coffee] #map(int, data_json[i].coffee) #list of timestamps epoch
+        obj["activity"] = int(data_json[i].activity[0].start)
+        obj["sleep"] = int(data_json[i].sleep.time)
+        obj["cluster"] = None
+        if i == 0: #for the first day
+            obj["sleep_duration"] = 7 * 60 * 60 #7 hours of sleep default
+        else:
+            obj["sleep_duration"] = obj["wake_up"] - int(data_json[i-1].wakeup.time)
+        data_obj.append(obj)
+    return data_obj
+
+
+def read_data():
+    if DEBUG:
+        present = 1460639800
+        command = "is_last_coffee"
+        csv = CSV("data.csv")
+        data_matrix = csv.read_data_rows()
+        for row in data_matrix:
+            x = len(row)
+            if x != 5:
+                raise ValueError("The input should contain 5 parameters per row but contains "+str(x)+".")
+        data_obj = objectise_matrix(data_matrix)
+    else:
+        present = int(time())
+        command = argv[1]
+        data_json = json.loads(argv[2]) # [row.split(',') for row in argv[2].split(';')]
+        data_obj = objectise_json(data_json)
+    return present, command, data_obj
+
 def clusterise_data(data_obj):
     dist_e = euclidian_dist(data_obj) #PROBLEM
     cluster_labels = AffinityPropagation().fit_predict(dist_e)
-    print cluster_labels
     for i in range(len(data_obj)):
         data_obj[i]["cluster"] = cluster_labels[i]
         
@@ -50,8 +76,7 @@ def clusterise_data(data_obj):
 
 
 
-present, command, data_matrix = read_data()
-data_obj = objectise_data(data_matrix)
+present, command, data_obj = read_data()
 clusterise_data(data_obj) #Sets a cluster number to each day
 cluster_now = get_cluster(data_obj)
 
@@ -112,6 +137,8 @@ elif command == "is_last_coffee": # yes or no
         print "yes"
     else:
         print "no"
+else:
+    print "undefined command"
         
         
         
