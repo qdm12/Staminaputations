@@ -1,6 +1,5 @@
 from os.path import isfile
-
-SEP = [',']
+from parameters import SEP
 
 class CSV(object):
     def __init__(self, filename):
@@ -69,8 +68,11 @@ class CSV(object):
         f.close()
 
     def read_data_rows(self):
+        self.check_file()
         f = self._retry_file()
-        rows = f.read().split('\n')[1:]
+        rows = f.read().split('\n')[1:] #1 to remove legend
         f.close()
-        matrix2D = [row.split(SEP[0])[:-1] for row in rows][:-1]
+        matrix2D = [row.split(SEP[0]) for row in rows][:-1] #to remove end of line
+        for row in matrix2D:
+            row[-1] = row[-1][:-1] #removes the \r
         return matrix2D
