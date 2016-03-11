@@ -33,11 +33,14 @@ def objectise_json(data_json):
     data_obj = []
     for i in range(L):
         obj = dict();
-        obj["sleep_quality"] = int(data_json[i].wakeup.quality)
-        obj["wake_up"] = int(data_json[i].wakeup.time)
-        obj["coffees"] = [int(x.time) for x in data_json.coffee] #map(int, data_json[i].coffee) #list of timestamps epoch
-        obj["activity"] = int(data_json[i].activity[0].start)
-        obj["sleep"] = int(data_json[i].sleep.time)
+        obj["sleep_quality"] = int(data_json[i]['wakeup']['quality'])
+        obj["wake_up"] = int(data_json[i]['wakeup']['time'])
+        temp = []
+        for j in range(len(data_json[i]['coffee'])):
+            temp += int(data_json[i]['coffee'][j]['time'])
+        obj["coffees"] =  temp#map(int, data_json[i].coffee) #list of timestamps epoch
+        obj["activity"] = int(data_json[i]['activity'][0]['start'])
+        obj["sleep"] = int(data_json[i]['sleep']['time'])
         obj["cluster"] = None
         if i == 0: #for the first day
             obj["sleep_duration"] = 7 * 60 * 60 #7 hours of sleep default
