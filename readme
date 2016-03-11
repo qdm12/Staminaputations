@@ -1,7 +1,7 @@
 # Staminaputations
 
-This is what it does
+Required: 
+-Python 2.7
+-VCPython2.7 for windows
 
-  - Calculate a
-  - Do this
-  - Finally this
+pip install numpy scipy sklearn
