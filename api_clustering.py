@@ -1,5 +1,6 @@
 from api_utilities import closest, most_common, remove_duplicates
 from math import pow, sqrt
+from parameters import DEBUG
     
 def get_accuracy(clusters, target, closest_found):
     
@@ -50,10 +51,10 @@ def get_cluster(data_obj):
     L = len(data_obj)
     clusters_wakeup, accuracy1 = get_cluster_wakeup(data_obj, data_obj[L-1]["wake_up"])
     clusters_sleepduration, accuracy2 = get_cluster_duration(data_obj, data_obj[L-1]["sleep_duration"])
-    print "DEBUG: cluster containing same wake up: " + str(clusters_wakeup)
-    print "DEBUG: cluster containing same sleep duration: " + str(clusters_sleepduration)
+    if DEBUG: print "DEBUG: cluster containing same wake up: " + str(clusters_wakeup)
+    if DEBUG: print "DEBUG: cluster containing same sleep duration: " + str(clusters_sleepduration)
     accuracy = 0.5*(accuracy1+accuracy2)
-    print "DEBUG: Overall accuracy: " + str(int(accuracy)) + "%"
+    if DEBUG: print "DEBUG: Overall accuracy: " + str(int(accuracy)) + "%"
     if clusters_sleepduration is None and clusters_wakeup is None:
         return None #XXXX at higher level to catch
     if clusters_sleepduration is None:

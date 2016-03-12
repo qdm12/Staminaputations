@@ -45,8 +45,6 @@ def get_caffeine_multi(t, t_coffees):
     """
     if type(t) is not int:
         raise TypeError("t must be an integer.")
-    if t < 1457623365: #10/03/2016
-        raise ValueError("t does not appear to be an epoch time in seconds.")
     if type(t_coffees) is not list:
         raise TypeError("t_coffees must be a list.")
     if len(t_coffees) == 0:

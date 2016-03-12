@@ -24,7 +24,7 @@ def average_activity(data_obj, cluster):
                 acc += temp
                 i += 1
     if i == 0: #No activity in cluster
-        return None #XXX to do at higher level
+        return 0 #XXX to do in app
     return t_day_start + acc / i
 
 def most_common(data):

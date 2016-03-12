@@ -5,13 +5,28 @@ from api_clustering import get_cluster, euclidian_dist, best_day_cluster
 from sklearn.cluster import AffinityPropagation
 from time import time
 from sys import argv
+from parameters import DEBUG
 import json
-
-DEBUG = False
 
 
 def objectise_matrix(data_matrix):
+    """ This takes a 2D list and uses it as a source to create a list of 
+        dictionaries as follows.
+        @param data_matrix: list of list of strings
+        @return: list of dict
+        @raise TypeError 
+    """
+    if type(data_matrix) is not list:
+        raise TypeError("data_matrix has to be a list.")
     L = len(data_matrix)
+    if L == 0:
+        raise TypeError("data_matrix can't be empty.")
+    for d in data_matrix:
+        if type(d) is not list:
+            raise TypeError("data_matrix[i] have to be lists.")
+        for e in d:
+            if type(e) is not str:
+                raise TypeError("data_matrix[i][j] have to be strings.")
     data_obj = []
     for i in range(L):
         obj = dict();
@@ -29,7 +44,15 @@ def objectise_matrix(data_matrix):
     return data_obj
 
 def objectise_json(data_json):
+    """ This takes a 2D list and uses it as a source to create a list of 
+        dictionaries as follows.
+        @param data_matrix: list of list of strings
+        @return: list of dict
+        @raise TypeError 
+    """
     L = len(data_json)
+    if L == 0:
+        raise TypeError("data_json can't be empty.")
     data_obj = []
     for i in range(L):
         obj = dict();
@@ -37,7 +60,7 @@ def objectise_json(data_json):
         obj["wake_up"] = int(data_json[i]['wakeup']['time'])
         temp = []
         for j in range(len(data_json[i]['coffee'])):
-            temp += int(data_json[i]['coffee'][j]['time'])
+            temp.append(int(data_json[i]['coffee'][j]['time']))
         obj["coffees"] =  temp#map(int, data_json[i].coffee) #list of timestamps epoch
         obj["activity"] = int(data_json[i]['activity'][0]['start'])
         obj["sleep"] = int(data_json[i]['sleep']['time'])
@@ -45,7 +68,7 @@ def objectise_json(data_json):
         if i == 0: #for the first day
             obj["sleep_duration"] = 7 * 60 * 60 #7 hours of sleep default
         else:
-            obj["sleep_duration"] = obj["wake_up"] - int(data_json[i-1].wakeup.time)
+            obj["sleep_duration"] = obj["wake_up"] - int(data_json[i-1]["sleep"]["time"])
         data_obj.append(obj)
     return data_obj
 
@@ -69,7 +92,7 @@ def read_data():
     return present, command, data_obj
 
 def clusterise_data(data_obj):
-    dist_e = euclidian_dist(data_obj) #PROBLEM
+    dist_e = euclidian_dist(data_obj)
     cluster_labels = AffinityPropagation().fit_predict(dist_e)
     for i in range(len(data_obj)):
         data_obj[i]["cluster"] = cluster_labels[i]
@@ -82,6 +105,10 @@ def clusterise_data(data_obj):
 present, command, data_obj = read_data()
 clusterise_data(data_obj) #Sets a cluster number to each day
 cluster_now = get_cluster(data_obj)
+if cluster_now is None:
+    if DEBUG: print "DEBUG: No cluster found !"
+    # Should never go here
+    
 
 
 
@@ -140,8 +167,11 @@ elif command == "is_last_coffee": # yes or no
         print "yes"
     else:
         print "no"
+        
+        
+
 else:
-    print "undefined command"
+    print "undefined_command"
         
         
         
