@@ -78,7 +78,7 @@ def euclidian_dist(data_obj):
     for i in range(L):      
         points[i] = [data_obj[i]["wake_up"],
                      data_obj[i]["sleep_duration"],
-                     data_obj[i]["sleep"],
+                     data_obj[i-1]["sleep"],
                      data_obj[i]["activity"]]
     coeff = [3, 3, 2, 1.5]
     dist_e = [[None for _ in range(L)] for _ in range(L)]

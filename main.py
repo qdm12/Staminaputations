@@ -34,7 +34,8 @@ def objectise_matrix(data_matrix):
         obj["wake_up"] = int(data_matrix[i][1])
         obj["coffees"] = map(int, data_matrix[i][2].split('#')) #list of timestamps epoch
         obj["activity"] = int(data_matrix[i][3])
-        obj["sleep"] = int(data_matrix[i][4])
+        if i < L - 1:
+            obj["sleep"] = int(data_matrix[i][4])
         obj["cluster"] = None
         if i == 0: #for the first day
             obj["sleep_duration"] = 7 * 60 * 60 #7 hours of sleep default
@@ -61,9 +62,10 @@ def objectise_json(data_json):
         temp = []
         for j in range(len(data_json[i]['coffee'])):
             temp.append(int(data_json[i]['coffee'][j]['time']))
-        obj["coffees"] =  temp#map(int, data_json[i].coffee) #list of timestamps epoch
+        obj["coffees"] =  temp
         obj["activity"] = int(data_json[i]['activity'][0]['start'])
-        obj["sleep"] = int(data_json[i]['sleep']['time'])
+        if i < L - 1:
+            obj["sleep"] = int(data_json[i]['sleep']['time'])
         obj["cluster"] = None
         if i == 0: #for the first day
             obj["sleep_duration"] = 7 * 60 * 60 #7 hours of sleep default
