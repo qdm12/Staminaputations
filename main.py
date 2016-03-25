@@ -94,6 +94,9 @@ def read_data():
     return present, command, data_obj
 
 def clusterise_data(data_obj):
+    """ Assigns a cluster label to each days present in the data received. 
+        @param data_obj: List of dictionnaries
+    """ 
     dist_e = euclidian_dist(data_obj)
     cluster_labels = AffinityPropagation().fit_predict(dist_e)
     for i in range(len(data_obj)):

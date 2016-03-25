@@ -48,6 +48,12 @@ def get_cluster_duration(data_obj, sleep_duration):
 
 #Returns clusters that contain elements with same wake up time and same sleep duration
 def get_cluster(data_obj):
+    """ Finds the right cluster for the current (latest) day given. 
+        This takes into account the wake_up and sleep_duration of the current
+        day, as this one is not finished yet.
+        @param data_obj: List of dictionnaries
+        @return: string, most common and suited cluster
+    """ 
     L = len(data_obj)
     clusters_wakeup, accuracy1 = get_cluster_wakeup(data_obj, data_obj[L-1]["wake_up"])
     clusters_sleepduration, accuracy2 = get_cluster_duration(data_obj, data_obj[L-1]["sleep_duration"])
@@ -56,7 +62,7 @@ def get_cluster(data_obj):
     accuracy = 0.5*(accuracy1+accuracy2)
     if DEBUG: print "DEBUG: Overall accuracy: " + str(int(accuracy)) + "%"
     if clusters_sleepduration is None and clusters_wakeup is None:
-        return None #XXXX at higher level to catch
+        return None
     if clusters_sleepduration is None:
         return most_common(clusters_wakeup)[0]
     if clusters_wakeup is None:
@@ -71,8 +77,13 @@ def get_cluster(data_obj):
     return most_common(clusters)[0]
 
 
-#calculates Euclidian distance
 def euclidian_dist(data_obj):
+    """ Calculates the N(N-1) Euclidian distances for N days. 
+        This takes into account the wake_up, sleep_duration, sleep
+        and activity times. 
+        @param data_obj: List of dictionnaries
+        @return: dist_e: 2D Matrix (list) of euclidian distances.
+    """ 
     L = len(data_obj)
     points = [[] for _ in range(L)]
     for i in range(L):      
@@ -80,7 +91,7 @@ def euclidian_dist(data_obj):
                      data_obj[i]["sleep_duration"],
                      data_obj[i-1]["sleep"],
                      data_obj[i]["activity"]]
-    coeff = [3, 3, 2, 1.5]
+    coeff = [3, 3, 2, 1.5] #different weights for each parameter
     dist_e = [[None for _ in range(L)] for _ in range(L)]
     for i in range(L):
         for j in range(L):
