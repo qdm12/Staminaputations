@@ -74,5 +74,5 @@ class CSV(object):
         f.close()
         matrix2D = [row.split(SEP[0]) for row in rows][:-1] #to remove end of line
         for row in matrix2D:
-            row[-1] = row[-1][:-1] #removes the \r
+            row[-1] = row[-1]#removes the \r
         return matrix2D

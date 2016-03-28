@@ -1,12 +1,17 @@
 from sys import maxint
+from parameters import DEBUG
+
+def debug_print(message):
+    if DEBUG: print "DEBUG: "+str(message)
 
 def average_sleep(data_obj, cluster):
+    L = len(data_obj)
     t_day_start = (data_obj[-1]["wake_up"] / 86400)*86400
     i = 0
     acc = 0
-    for obj in data_obj:
-        if obj["cluster"] == cluster:
-            temp = obj["sleep"] % 86400
+    for j in range(L-1):
+        if data_obj[j]["cluster"] == cluster:
+            temp = data_obj[j]["sleep"] % 86400
             if temp < 43200:
                 temp += 86400 #if the user goes to sleep the morning (before 12am)
             acc += temp
@@ -26,6 +31,13 @@ def average_activity(data_obj, cluster):
     if i == 0: #No activity in cluster
         return 0 #XXX to do in app
     return t_day_start + acc / i
+
+def same_cluster(data_obj, cluster):
+    same_cluster = []
+    for obj in data_obj:
+        if obj["cluster"] == cluster:
+            same_cluster.append(obj)
+    return same_cluster
 
 def most_common(data):
     L = len(data)
